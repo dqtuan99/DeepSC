@@ -6,6 +6,7 @@ so i put them into the same file instead of importing from outside
 
 import torch
 import os
+import pickle
 from model import calBLEU, SemanticCommunicationSystem
 from data_process import CorpusData
 from nltk.tokenize import word_tokenize
@@ -59,9 +60,13 @@ K_range = np.array([8])
 
 batch_size = 512
 
+test_info = {}
+
 for K in K_range:
     
-    for snr in snr_range:  
+    K_info = {}
+    
+    for snr in snr_range:
             
         model_name = 'deepSC_K_' + str(K) + '_snr_' + str(snr) + '.pth'
         
@@ -179,27 +184,41 @@ for K in K_range:
             print('BLEU 4 = {}'.format(avg_BLEU_4))
             print('Semantic Similarity = {}'.format(avg_SS))
             
-            # x = np.arange(1, 18, 3)
-            # y1 = BLEU_1_SS_per_testSNR
-            # y2 = BLEU_2_SS_per_testSNR
-            # y3 = BLEU_3_SS_per_testSNR
-            # y4 = BLEU_4_SS_per_testSNR
-            # y5 = SS_per_testSNR
-            # plt.figure(figsize=(6.4, 9.6))
-            # plt.suptitle("deepSC without MI")
-            # plt.subplot(2, 1, 1)
-            # plt.xlabel("SNR")
-            # plt.ylabel("BLEU")
-            # plt.plot(x, y1, marker='D', label='1-gram')
-            # plt.plot(x, y2, marker='D', label='2-gram')
-            # plt.plot(x, y3, marker='D', label='3-gram')
-            # plt.plot(x, y4, marker='D', label='4-gram')
-            # plt.legend(loc='best')
-            # plt.subplot(2, 1, 2)
-            # plt.xlabel("SNR")
-            # plt.ylabel("Sentence Similarity")
-            # plt.plot(x, y5, marker='D')
-            # plt.show()
-            
-            # print("All done!")
+        current_info = {}
+        current_info['BLEU_1'] = BLEU_1_SS_per_testSNR
+        current_info['BLEU_2'] = BLEU_2_SS_per_testSNR
+        current_info['BLEU_3'] = BLEU_3_SS_per_testSNR
+        current_info['BLEU_4'] = BLEU_4_SS_per_testSNR
+        current_info['SS'] = SS_per_testSNR
+        
+        K_info[snr] = current_info
+        
+    test_info[K] = K_info
+        
+    x = test_snr_range
+    y1 = BLEU_1_SS_per_testSNR
+    y2 = BLEU_2_SS_per_testSNR
+    y3 = BLEU_3_SS_per_testSNR
+    y4 = BLEU_4_SS_per_testSNR
+    y5 = SS_per_testSNR
+    plt.figure(figsize=(6.4, 9.6))
+    plt.suptitle("deepSC without MI")
+    plt.subplot(2, 1, 1)
+    plt.xlabel("SNR")
+    plt.ylabel("BLEU")
+    plt.plot(x, y1, marker='D', label='1-gram')
+    plt.plot(x, y2, marker='D', label='2-gram')
+    plt.plot(x, y3, marker='D', label='3-gram')
+    plt.plot(x, y4, marker='D', label='4-gram')
+    plt.legend(loc='best')
+    plt.subplot(2, 1, 2)
+    plt.xlabel("SNR")
+    plt.ylabel("Sentence Similarity")
+    plt.plot(x, y5, marker='D')
+    plt.show()
+    
+with open('./test_result/test_info.pkl', 'wb') as f:
+    pickle.dump(test_info, f)
+    
+print("All done!")
 
