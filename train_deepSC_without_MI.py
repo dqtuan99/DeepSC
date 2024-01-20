@@ -75,5 +75,7 @@ for K in K_range:
     model_name = 'deepSC_K_' + str(K) + '_snr_' + str(snr) + '.pth'
     model_path = os.path.join(save_path, model_name)
 
+    print("Saving model with current setting (K, snr) = ({}, {})".format(K, snr))
     torch.save(net.state_dict(), model_path)
-    print("All done!")
+    
+print("All done!")

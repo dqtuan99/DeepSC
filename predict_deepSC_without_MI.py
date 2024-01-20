@@ -41,7 +41,7 @@ input_size = corpus_data.num_classes
 # net.load_state_dict(torch.load(model_path, map_location = device))
 # net.to(device)
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-bert_model = BertModel.from_pretrained('bert-base-uncased')
+bert_model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
 
 # dataloader = DataLoader(corpus_data, batch_size=batch_size, shuffle=False)
